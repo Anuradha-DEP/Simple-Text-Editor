@@ -27,7 +27,7 @@ public class EditorFormController {
     private final List<Index> searchList = new ArrayList<>();
 
     public void initialize(){
-        txtEditor.prefHeight(pneText.getMaxHeight());
+
         pneFind.setVisible(false);
         pneReplace.setVisible(false);
 
@@ -84,7 +84,7 @@ public class EditorFormController {
     }
 
     public void btnFindNext_OnAction(ActionEvent actionEvent) {
-        txtEditor.prefHeight(pneText.getHeight()-89);
+
         if (!searchList.isEmpty()) {
             findOffset++;
             if (findOffset >= searchList.size()) {
