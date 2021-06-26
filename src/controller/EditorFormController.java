@@ -27,28 +27,37 @@ public class EditorFormController {
     private final List<Index> searchList = new ArrayList<>();
 
     public void initialize(){
-        pneReplace.setVisible(false);
         pneFind.setVisible(false);
+        pneReplace.setVisible(false);
 
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) ->{
+        ChangeListener textListener = (ChangeListener<String>) (observable, oldValue, newValue) -> {
+            searchMatches(newValue);
+        };
 
-            FXUtil.highlightOnTextArea(txtEditor,newValue, Color.web("yellow", 0.8));
+        txtSearch.textProperty().addListener(textListener);
+        txtSearch1.textProperty().addListener(textListener);
 
-            try{
-                Pattern regEx = Pattern.compile(newValue);
-                Matcher matcher = regEx.matcher(txtEditor.getText());
+    }
 
-                searchList.clear();
+    private void searchMatches(String query){
+        FXUtil.highlightOnTextArea(txtEditor,query, Color.web("yellow", 0.8));
 
-                while (matcher.find()){
-                    searchList.add(new Index(matcher.start(), matcher.end() ));
-                }
-            }catch (PatternSyntaxException e){
+        try {
+            Pattern regExp = Pattern.compile(query);
+            Matcher matcher = regExp.matcher(txtEditor.getText());
 
+            searchList.clear();
+
+            while (matcher.find()) {
+                searchList.add(new Index(matcher.start(), matcher.end()));
             }
 
-        } );
+            if (searchList.isEmpty()){
+                findOffset = -1;
+            }
+        } catch (PatternSyntaxException e) {
 
+        }
     }
 
 
@@ -94,10 +103,16 @@ public class EditorFormController {
     }
 
     public void btnReplace_OnAction(ActionEvent actionEvent) {
-
+        if (findOffset == -1) return;
+        txtEditor.replaceText(searchList.get(findOffset).startingIndex, searchList.get(findOffset).endIndex, txtReplace.getText());
+        searchMatches(txtSearch1.getText());
     }
 
     public void btnReplaceAll_OnAction(ActionEvent actionEvent) {
+        while (!searchList.isEmpty()) {
+            txtEditor.replaceText(searchList.get(0).startingIndex, searchList.get(0).endIndex, txtReplace.getText());
+            searchMatches(txtSearch1.getText());
+        }
     }
 }
 
