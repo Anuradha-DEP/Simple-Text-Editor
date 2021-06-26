@@ -7,6 +7,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import util.FXUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class EditorFormController {
     public AnchorPane pneReplace;
     public TextField txtSearch1;
     public TextField txtReplace;
+    public AnchorPane pneTxtEditor;
     private int findOffset = -1;
     private final List<Index> searchList = new ArrayList<>();
 
@@ -29,14 +31,22 @@ public class EditorFormController {
         pneFind.setVisible(false);
 
         txtSearch.textProperty().addListener((observable, oldValue, newValue) ->{
-            Pattern regEx = Pattern.compile(newValue);
-            Matcher matcher = regEx.matcher(txtEditor.getText());
 
-            searchList.clear();
+            FXUtil.highlightOnTextArea(txtEditor,newValue, Color.web("yellow", 0.8));
 
-            while (matcher.find()){
-                searchList.add(new Index(matcher.start(), matcher.end() ));
+            try{
+                Pattern regEx = Pattern.compile(newValue);
+                Matcher matcher = regEx.matcher(txtEditor.getText());
+
+                searchList.clear();
+
+                while (matcher.find()){
+                    searchList.add(new Index(matcher.start(), matcher.end() ));
+                }
+            }catch (PatternSyntaxException e){
+
             }
+
         } );
 
     }
